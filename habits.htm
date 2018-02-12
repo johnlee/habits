@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+  <meta charset="utf-8" />
+  <title>Habits</title>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
+    crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
+    crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
+    crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
+    crossorigin="anonymous"></script>
+  <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+  <script src="scripts.js"></script>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <span class="text-muted small">Beta v1.0</span>
+    <h1>Habits</h1>
+    <div class="card">
+      <div class="card-block">
+        <form id="form">
+          <div class="form-group row">
+            <label for="formDate" class="col-sm-2 col-form-label">Date</label>
+            <div class="col-sm-10">
+              <input type="number" class="form-control" id="formDate" placeholder="YYYYMMDD">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label for="formComments" class="col-sm-2 col-form-label">Comments</label>
+            <div class="col-sm-10">
+              <textarea class="form-control" id="formComments" rows="2"></textarea>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-sm-12">
+              Totals
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-sm-2">
+              <h4>
+                <i class="fas fa-check"></i>
+                </span>
+                <strong title="65%">65</strong>
+              </h4>
+            </div>
+            <div class="col-sm-2">
+              <h4>
+                <i class="fas fa-times"></i>
+                </span>
+                <strong title="35%">30</strong>
+              </h4>
+            </div>
+            <div class="col-sm-2">
+              <h4>
+                <i class="fas fa-fire"></i>
+                </span>
+                <strong title="Past 30 days">105</strong>
+              </h4>
+            </div>
+            <div class="col-sm-6 text-right">
+              <button type="submit" class="btn btn-outline-warning btn-lg" id="btnAttempt">
+                <i class="fas fa-fire"></i>
+              </button>
+              <button type="submit" class="btn btn-outline-success btn-lg" id="btnSuccess">
+                <i class="fas fa-check"></i>
+              </button>
+              <button type="submit" class="btn btn-outline-danger btn-lg" id="btnFail">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    <table class="table table-hover" id="results_table">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Status</th>
+          <th>Attempts</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>20180201</td>
+          <td>
+            <i class="fas fa-check"></i>
+          </td>
+          <td>
+            <i class="fas fa-fire"></i>
+            <i class="fas fa-fire"></i>
+            <i class="fas fa-fire"></i>
+            <i class="fas fa-fire"></i>
+            <i class="fas fa-fire"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>20180202</td>
+          <td>
+            <i class="fas fa-times"></i>
+          </td>
+          <td>
+            <i class="fas fa-fire"></i>
+            <i class="fas fa-fire"></i>
+            <i class="fas fa-fire"></i>
+            <i class="fas fa-fire"></i>
+            <i class="fas fa-fire"></i>
+            <i class="fas fa-fire"></i>
+          </td>
+        </tr>
+        <tr>
+          <td>20180203</td>
+          <td>
+
+          </td>
+          <td>
+            <i class="fas fa-fire"></i>
+            <i class="fas fa-fire"></i>
+            <i class="fas fa-fire"></i>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</body>
+
+</html>
