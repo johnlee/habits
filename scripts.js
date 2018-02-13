@@ -1,5 +1,6 @@
+
 $(document).ready(function () {
-    var url = " https://7p4o4mai44.execute-api.us-east-2.amazonaws.com/prod/habits";
+    var url = "https://7p4o4mai44.execute-api.us-east-2.amazonaws.com/prod/habits";
     var today = dateToYMD();
     $("#formDate").val(today);
 

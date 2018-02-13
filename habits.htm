@@ -1,21 +1,178 @@
 <!DOCTYPE html>
-
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
   <title>Habits</title>
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ"
-    crossorigin="anonymous">
-  <link rel="stylesheet" href="style.css">
-  <script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n"
-    crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb"
-    crossorigin="anonymous"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn"
-    crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
   <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
-  <script src="scripts.js"></script>
+  <script>
+    $(document).ready(function () {
+      var url = "https://k1gs3gysn1.execute-api.us-east-2.amazonaws.com/prod/habits";
+      var today = dateToYMD();
+      $("#formDate").val(today);
+
+      $.getJSON(url, function (data) {
+        var success = 0;
+        var fail = 0;
+        var attempt = 0;
+        var days = 0;
+
+        $.each(data.Items, function (i, item) {
+          var attempts = parseInt(item.Attempts);
+          switch (item.Status) {
+            case "success":
+              success++;
+              break;
+            case "fail":
+              fail++;
+              break;
+          }
+          if (days < 30) { attempt = attempt + attempts; }
+          days++;
+
+          var row = `<tr><td>${item.Date}</td><td>${drawStatus(item.Status)}</td><td>${drawFire(attempts)}</td></tr>`;
+          $("#tableBody").append(row);
+        });
+        var percentSuccess = success / days;
+        var percentFail = fail / days;
+        $("#totalSuccess").append(`<strong title="${percentSuccess}">${success}</strong>`);
+        $("#totalFail").append(`<strong title="${percentFail}">${fail}</strong>`);
+        $("#totalAttempt").append(`<strong title="In past 30 days">${attempt}</strong>`);
+        $("#totalDays").append(`<strong">${days}</strong>`);
+      });
+
+      $("form").submit(function (e) { e.preventDefault(); });
+
+      $("#btnAttempt").click(function () {
+        if (dateCheck()) { submitAction("attempt"); }
+      });
+
+      $("#btnSuccess").click(function () {
+        if (dateCheck()) { submitAction("success"); }
+      });
+
+      $("#btnFail").click(function () {
+        if (dateCheck()) { submitAction("fail"); }
+      });
+
+      function submitAction(action) {
+        var content = {
+          action: action,
+          comments: $("#formComments").val(),
+          date: $("#formDate").val()
+        };
+        $.ajax({
+          url: url,
+          dataType: "json",
+          contentType: "application/json;charset=utf-8",
+          type: "POST",
+          data: JSON.stringify(content),
+          success: function (result) {
+            success(result);
+          },
+          error: function (status) {
+            if (status && status.status && status.status == 200) {
+              success(status);
+            } else {
+              alert("ERROR - unable to submit request. " + JSON.stringify(status));
+              console.log(JSON.stringify(status));
+            }
+          }
+        });
+      }
+
+      function dateCheck() {
+        var date = $("#formDate").val();
+        if (date.length != 8) {
+          alert("ERROR - invalid date!");
+          return false;
+        }
+        return true;
+      }
+
+      function dateToYMD() {
+        var date = new Date();
+        var d = date.getDate();
+        var m = date.getMonth() + 1; //Month from 0 to 11
+        var y = date.getFullYear();
+        return '' + y + (m <= 9 ? '0' + m : m) + (d <= 9 ? '0' + d : d);
+      }
+
+      function drawStatus(status) {
+        if (status.includes("success")) {
+          return `<i class="fas fa-check"></i>`;
+        } else if (status.includes("fail")) {
+          return `<i class="fas fa-times"></i>`;
+        } else {
+          return `<i class="far fa-question-circle"></i>`;
+        }
+      }
+
+      function drawFire(count) {
+        var fire = `<i class="fas fa-fire"></i> `;
+        var result = '';
+        for (i = 0; i < count; i++) {
+          result += fire;
+        }
+        return result;
+      }
+
+      function success(result) {
+        console.log("Successfully submitted request. " + JSON.stringify(result));
+        location.reload();
+      }
+    });  
+  </script>
+  <style>
+    button {
+      margin-left: 1em;
+    }
+
+    .card {
+      margin-top: 1em;
+      margin-bottom: 1em;
+    }
+
+    .spanTotals {
+      margin-right: 1em;
+      white-space: nowrap;
+    }
+
+    .fa-fire {
+      color: orange;
+    }
+
+    .fa-check {
+      color: green;
+    }
+
+    .fa-times {
+      color: red;
+    }
+
+    @media all and (min-width: 960px) {
+      body {
+        font-size: 18px;
+      }
+    }
+
+    @media all and (max-width: 959px) and (min-width: 600px) {
+      body {
+        font-size: 16px;
+      }
+    }
+
+    @media all and (max-width: 599px) and (min-width: 320px) {
+      body {
+        font-size: 14px;
+      }
+    }
+  </style>
 </head>
 
 <body>
@@ -37,34 +194,28 @@
               <textarea class="form-control" id="formComments" rows="2"></textarea>
             </div>
           </div>
-          <div class="row">
-            <div class="col-sm-12">
-              Totals
+          <div class="form-group row">
+            <label class="col-sm-2 col-form-label">Totals</label>
+            <div class="col-sm-10">
+              <h4>
+                <span id="totalSuccess" class="spanTotals">
+                  <i class="fas fa-check"></i>
+                </span>
+                <span id="totalFail" class="spanTotals">
+                  <i class="fas fa-times"></i>
+                </span>
+                <span id="totalAttempt" class="spanTotals">
+                  <i class="fas fa-fire"></i>
+                </span>
+                <span id="totalDays" class="spanTotals">
+                  <i class="far fa-calendar-alt"></i>
+                </span>
+              </h4>
             </div>
           </div>
+          <hr>
           <div class="form-group row">
-            <div class="col-sm-2">
-              <h4>
-                <i class="fas fa-check"></i>
-                </span>
-                <strong title="65%">65</strong>
-              </h4>
-            </div>
-            <div class="col-sm-2">
-              <h4>
-                <i class="fas fa-times"></i>
-                </span>
-                <strong title="35%">30</strong>
-              </h4>
-            </div>
-            <div class="col-sm-2">
-              <h4>
-                <i class="fas fa-fire"></i>
-                </span>
-                <strong title="Past 30 days">105</strong>
-              </h4>
-            </div>
-            <div class="col-sm-6 text-right">
+            <div class="col-sm-12 text-right">
               <button type="submit" class="btn btn-outline-warning btn-lg" id="btnAttempt">
                 <i class="fas fa-fire"></i>
               </button>
@@ -87,45 +238,7 @@
           <th>Attempts</th>
         </tr>
       </thead>
-      <tbody>
-        <tr>
-          <td>20180201</td>
-          <td>
-            <i class="fas fa-check"></i>
-          </td>
-          <td>
-            <i class="fas fa-fire"></i>
-            <i class="fas fa-fire"></i>
-            <i class="fas fa-fire"></i>
-            <i class="fas fa-fire"></i>
-            <i class="fas fa-fire"></i>
-          </td>
-        </tr>
-        <tr>
-          <td>20180202</td>
-          <td>
-            <i class="fas fa-times"></i>
-          </td>
-          <td>
-            <i class="fas fa-fire"></i>
-            <i class="fas fa-fire"></i>
-            <i class="fas fa-fire"></i>
-            <i class="fas fa-fire"></i>
-            <i class="fas fa-fire"></i>
-            <i class="fas fa-fire"></i>
-          </td>
-        </tr>
-        <tr>
-          <td>20180203</td>
-          <td>
-
-          </td>
-          <td>
-            <i class="fas fa-fire"></i>
-            <i class="fas fa-fire"></i>
-            <i class="fas fa-fire"></i>
-          </td>
-        </tr>
+      <tbody id="tableBody">
       </tbody>
     </table>
   </div>
