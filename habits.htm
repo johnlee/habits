@@ -32,7 +32,7 @@
               fail++;
               break;
           }
-          if (days < 30) { attempt = attempt + attempts; }
+          if (days < 8) { attempt = attempt + attempts; }
           days++;
 
           var row = `<tr><td>${item.Date}</td><td>${drawStatus(item.Status)}</td><td>${drawFire(attempts)}</td></tr>`;
@@ -42,7 +42,7 @@
         var percentFail = fail / days;
         $("#totalSuccess").append(`<strong title="${percentSuccess}">${success}</strong>`);
         $("#totalFail").append(`<strong title="${percentFail}">${fail}</strong>`);
-        $("#totalAttempt").append(`<strong title="In past 30 days">${attempt}</strong>`);
+        $("#totalAttempt").append(`<strong title="In past 8 days">${attempt}</strong>`);
         $("#totalDays").append(`<strong">${days}</strong>`);
       });
 
