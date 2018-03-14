@@ -12,39 +12,10 @@
   <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
   <script>
     $(document).ready(function () {
-      var url = "https://k1gs3gysn1.execute-api.us-east-2.amazonaws.com/prod/habits";
+      //var url = "https://k1gs3gysn1.execute-api.us-east-2.amazonaws.com/prod/habits";
+      var url = "http://solidfish.com/habits/habits";
       var today = dateToYMD();
       $("#formDate").val(today);
-
-      $.getJSON(url, function (data) {
-        var success = 0;
-        var fail = 0;
-        var attempt = 0;
-        var days = 0;
-
-        $.each(data.Items, function (i, item) {
-          var attempts = parseInt(item.Attempts);
-          switch (item.Status) {
-            case "success":
-              success++;
-              break;
-            case "fail":
-              fail++;
-              break;
-          }
-          if (days < 8) { attempt = attempt + attempts; }
-          days++;
-
-          var row = `<tr><td>${item.Date}</td><td>${drawStatus(item.Status)}</td><td>${drawFire(attempts)}</td></tr>`;
-          $("#tableBody").append(row);
-        });
-        var percentSuccess = success / days;
-        var percentFail = fail / days;
-        $("#totalSuccess").append(`<strong title="${percentSuccess}">${success}</strong>`);
-        $("#totalFail").append(`<strong title="${percentFail}">${fail}</strong>`);
-        $("#totalAttempt").append(`<strong title="In past 8 days">${attempt}</strong>`);
-        $("#totalDays").append(`<strong">${days}</strong>`);
-      });
 
       $("form").submit(function (e) { e.preventDefault(); });
 
@@ -126,6 +97,40 @@
         console.log("Successfully submitted request. " + JSON.stringify(result));
         location.reload();
       }
+
+      function loadPage() {
+        $.getJSON(url, function (data) {
+          var success = 0;
+          var fail = 0;
+          var attempt = 0;
+          var days = 0;
+
+          $.each(data, function (i, item) {
+            var attempts = parseInt(item.attempts);
+            switch (item.status) {
+              case "success":
+                success++;
+                break;
+              case "fail":
+                fail++;
+                break;
+            }
+            if (days < 8) { attempt = attempt + attempts; }
+            days++;
+
+            var row = `<tr><td>${item.date}</td><td>${drawStatus(item.status)}</td><td>${drawFire(attempts)}</td></tr>`;
+            $("#tableBody").append(row);
+          });
+          var percentSuccess = success / days;
+          var percentFail = fail / days;
+          $("#totalSuccess").append(`<strong title="${percentSuccess}">${success}</strong>`);
+          $("#totalFail").append(`<strong title="${percentFail}">${fail}</strong>`);
+          $("#totalAttempt").append(`<strong title="In past 8 days">${attempt}</strong>`);
+          $("#totalDays").append(`<strong">${days}</strong>`);
+        });
+      }
+
+      loadPage();
     });  
   </script>
   <style>
