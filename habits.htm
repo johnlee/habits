@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width" />
@@ -12,29 +11,54 @@
   <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
   <script>
     $(document).ready(function () {
+      $.ajaxSetup({ cache: false });
       //var url = "https://k1gs3gysn1.execute-api.us-east-2.amazonaws.com/prod/habits";
       var url = "http://solidfish.com/habits/habits";
       var today = dateToYMD();
       $("#formDate").val(today);
+      $("#editDate").val(today);
 
       $("form").submit(function (e) { e.preventDefault(); });
+      $("editform").submit(function (e) { e.preventDefault(); });
 
-      $("#btnAttempt").click(function () {
-        if (dateCheck()) { submitAction("attempt"); }
+      $("#btnExtinguish").click(function () {
+        if (dateCheck()) { submitAction("provoke"); }
       });
 
-      $("#btnSuccess").click(function () {
-        if (dateCheck()) { submitAction("success"); }
+      $("#btnBurn").click(function () {
+        if (dateCheck()) { submitAction("succumb"); }
       });
 
-      $("#btnFail").click(function () {
-        if (dateCheck()) { submitAction("fail"); }
+      $("#btnSave").click(function () {
+        if (dateCheck()) { 
+          var content = {
+            provoke: $("#editExtinguish").val(),
+            succumb: $("#editFire").val()
+          };
+          $.ajax({
+            url: url + '/' + $("#editDate").val(),
+            dataType: "json",
+            contentType: "application/json;charset=utf-8",
+            type: "POST",
+            data: JSON.stringify(content),
+            success: function (result) {
+              success(result);
+            },
+            error: function (status) {
+              if (status && status.status && status.status == 200) {
+                success(status);
+              } else {
+                alert("ERROR - unable to submit request. " + JSON.stringify(status));
+                console.log(JSON.stringify(status));
+              }
+            }
+          });
+        }
       });
 
       function submitAction(action) {
         var content = {
           action: action,
-          comments: $("#formComments").val(),
           date: $("#formDate").val()
         };
         $.ajax({
@@ -74,16 +98,6 @@
         return '' + y + (m <= 9 ? '0' + m : m) + (d <= 9 ? '0' + d : d);
       }
 
-      function drawStatus(status) {
-        if (status.includes("success")) {
-          return `<i class="fas fa-check"></i>`;
-        } else if (status.includes("fail")) {
-          return `<i class="fas fa-times"></i>`;
-        } else {
-          return `<i class="far fa-question-circle"></i>`;
-        }
-      }
-
       function drawFire(count) {
         var fire = `<i class="fas fa-fire"></i> `;
         var result = '';
@@ -93,43 +107,57 @@
         return result;
       }
 
+      function drawExtinguisher(count) {
+        var fire = `<i class="fas fa-fire-extinguisher"></i> `;
+        var result = '';
+        for (i = 0; i < count; i++) {
+          result += fire;
+        }
+        return result;
+      }
+
       function success(result) {
         console.log("Successfully submitted request. " + JSON.stringify(result));
-        location.reload();
+        location.reload(true);
       }
 
       function loadPage() {
+        console.log('Loading Page...');
         $.getJSON(url, function (data) {
           var success = 0;
           var fail = 0;
-          var attempt = 0;
+          var totalExtinguish = 0;
+          var totalBurn = 0;
           var days = 0;
 
           $.each(data, function (i, item) {
-            var attempts = parseInt(item.attempts);
-            switch (item.status) {
-              case "success":
-                success++;
-                break;
-              case "fail":
-                fail++;
-                break;
+            var extinguish = parseInt(item.provoke);
+            var burn = parseInt(item.succumb);
+            var bkgd = 'bkgd-good';
+            if (burn > 2) {
+              fail++;
+              bkgd = 'bkgd-danger';
+            } else {
+              success++;
             }
-            if (days < 8) { attempt = attempt + attempts; }
+            if (days < 8) { 
+              totalExtinguish = totalExtinguish + extinguish;
+              totalBurn = totalBurn + burn; 
+            }
             days++;
 
-            var row = `<tr><td>${item.date}</td><td>${drawStatus(item.status)}</td><td>${drawFire(attempts)}</td></tr>`;
+            var row = `<tr><td class='${bkgd}'">${item.date}</td><td>${drawExtinguisher(extinguish)}</td><td>${drawFire(burn)}</td></tr>`;
             $("#tableBody").append(row);
           });
           var percentSuccess = success / days;
           var percentFail = fail / days;
           $("#totalSuccess").append(`<strong title="${percentSuccess}">${success}</strong>`);
           $("#totalFail").append(`<strong title="${percentFail}">${fail}</strong>`);
-          $("#totalAttempt").append(`<strong title="In past 8 days">${attempt}</strong>`);
+          $("#totalExtinguished").append(`<strong title="In past 8 days">${totalExtinguish}</strong>`);
+          $("#totalBurned").append(`<strong">${totalBurn}</strong>`);
           $("#totalDays").append(`<strong">${days}</strong>`);
         });
       }
-
       loadPage();
     });  
   </script>
@@ -148,8 +176,12 @@
       white-space: nowrap;
     }
 
-    .fa-fire {
+    .fa-fire-extinguisher {
       color: orange;
+    }
+
+    .fa-fire {
+      color: #b22222;
     }
 
     .fa-check {
@@ -158,6 +190,14 @@
 
     .fa-times {
       color: red;
+    }
+    
+    .bkgd-danger {
+      background-color: #f5a3a3;
+    }
+
+    .bkgd-good {
+      background-color: #99ff99;
     }
 
     @media all and (min-width: 960px) {
@@ -183,7 +223,6 @@
 <body>
   <div class="container-fluid">
     <span class="text-muted small">Beta v1.0</span>
-    <h1>Habits</h1>
     <div class="card">
       <div class="card-block">
         <form id="form">
@@ -191,12 +230,6 @@
             <label for="formDate" class="col-sm-2 col-form-label">Date</label>
             <div class="col-sm-10">
               <input type="number" class="form-control" id="formDate" placeholder="YYYYMMDD">
-            </div>
-          </div>
-          <div class="form-group row">
-            <label for="formComments" class="col-sm-2 col-form-label">Comments</label>
-            <div class="col-sm-10">
-              <textarea class="form-control" id="formComments" rows="2"></textarea>
             </div>
           </div>
           <div class="form-group row">
@@ -209,7 +242,10 @@
                 <span id="totalFail" class="spanTotals">
                   <i class="fas fa-times"></i>
                 </span>
-                <span id="totalAttempt" class="spanTotals">
+                <span id="totalExtinguished" class="spanTotals">
+                  <i class="fas fa-fire-extinguisher"></i>
+                </span>
+                <span id="totalBurned" class="spanTotals">
                   <i class="fas fa-fire"></i>
                 </span>
                 <span id="totalDays" class="spanTotals">
@@ -221,14 +257,14 @@
           <hr>
           <div class="form-group row">
             <div class="col-sm-12 text-right">
-              <button type="submit" class="btn btn-outline-warning btn-lg" id="btnAttempt">
+              <button type="submit" class="btn btn-outline-warning btn-lg" id="btnExtinguish">
+                <i class="fas fa-fire-extinguisher"></i>
+              </button>
+              <button type="submit" class="btn btn-outline-danger btn-lg" id="btnBurn">
                 <i class="fas fa-fire"></i>
               </button>
-              <button type="submit" class="btn btn-outline-success btn-lg" id="btnSuccess">
-                <i class="fas fa-check"></i>
-              </button>
-              <button type="submit" class="btn btn-outline-danger btn-lg" id="btnFail">
-                <i class="fas fa-times"></i>
+              <button type="submit" class="btn btn-outline-success btn-lg" id="btnBurn" data-toggle="modal" data-target="#modal">
+                <i class="fas fa-pencil-alt"></i>
               </button>
             </div>
           </div>
@@ -239,14 +275,46 @@
       <thead>
         <tr>
           <th>Date</th>
-          <th>Status</th>
-          <th>Attempts</th>
+          <th>Extinguish</th>
+          <th>Burn</th>
         </tr>
       </thead>
       <tbody id="tableBody">
       </tbody>
     </table>
   </div>
-</body>
+  <div class="modal fade" id="modal" role="dialog">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <form id="editform">
+            <div class="form-group row">
+              <label for="editDate" class="col-sm-2 col-form-label">Date</label>
+              <div class="col-sm-10">
+                <input type="number" class="form-control" id="editDate" placeholder="YYYYMMDD">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="editExtinguish" class="col-sm-2 col-form-label"><i class="fas fa-fire-extinguisher"></i></label>
+              <div class="col-sm-10">
+                <input type="number" class="form-control" id="editExtinguish" placeholder="0">
+              </div>
+            </div>
+            <div class="form-group row">
+              <label for="editFire" class="col-sm-2 col-form-label"><i class="fas fa-fire"></i></label>
+              <div class="col-sm-10">
+                <input type="number" class="form-control" id="editFire" placeholder="0">
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button id="btnSave" type="button" class="btn btn-success" data-dismiss="modal">Save</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
+</body>
 </html>
