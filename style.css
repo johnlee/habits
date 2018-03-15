@@ -1,0 +1,65 @@
+body {
+  
+}    
+
+button {
+  margin-left: 1em;
+}
+
+.card {
+  margin-top: 1em;
+  margin-bottom: 1em;
+}
+
+.spanTotals {
+  margin-right: 1em;
+  white-space: nowrap;
+}
+
+.fa-fire-extinguisher {
+  color: orange;
+}
+
+.fa-fire {
+  color: #b22222;
+}
+
+.fa-check {
+  color: green;
+}
+
+.fa-times {
+  color: red;
+}
+
+.bkgd-danger {
+  background-color: #f5a3a3;
+}
+
+.bkgd-good {
+  background-color: #99ff99;
+}
+
+canvas {
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+@media all and (min-width: 960px) {
+  body {
+    font-size: 18px;
+  }
+}
+
+@media all and (max-width: 959px) and (min-width: 600px) {
+  body {
+    font-size: 16px;
+  }
+}
+
+@media all and (max-width: 599px) and (min-width: 320px) {
+  body {
+    font-size: 14px;
+  }
+}
