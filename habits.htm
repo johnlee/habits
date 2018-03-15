@@ -10,6 +10,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js"></script>
   <script defer src="https://use.fontawesome.com/releases/v5.0.6/js/all.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
   <script src="./script.js"></script>
 </head>
 <body>
@@ -27,7 +28,7 @@
           <div class="form-group row">
             <label class="col-sm-2 col-form-label">Totals</label>
             <div class="col-sm-10">
-              <h4>
+              <h1>
                 <span id="totalSuccess" class="spanTotals">
                   <i class="fas fa-check"></i>
                 </span>
@@ -43,7 +44,7 @@
                 <span id="totalDays" class="spanTotals">
                   <i class="far fa-calendar-alt"></i>
                 </span>
-              </h4>
+              </h1>
             </div>
           </div>
           <hr>
@@ -63,6 +64,15 @@
         </form>
       </div>
     </div>
+    <hr>
+    <div>
+      <canvas id="chart-pie"></canvas>
+    </div>
+    <hr>
+    <div>
+      <canvas id="chart-line"></canvas>
+    </div>
+    <hr>
     <table class="table table-hover" id="results_table">
       <thead>
         <tr>
