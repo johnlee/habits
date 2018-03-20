@@ -19,7 +19,7 @@ $app->get('/', function(Request $request, Response $response){
     echo file_get_contents("habits.htm");
 });
 $app->get('/habits', function(Request $request, Response $response){
-    $sql = "SELECT * FROM Habits ORDER BY `date` DESC";
+    $sql = "SELECT * FROM Habits ORDER BY `date` DESC LIMIT 365";
     try{
         $db = new db();
         $db = $db->connect();

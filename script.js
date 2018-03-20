@@ -118,8 +118,11 @@ $(document).ready(function () {
         var totalDays = 0;
         var percentFail = 0;
         var percentSuccess = 0;
+        var monthSuccess = 0;
+        var monthFail = 0;
         var extinguishes = [];
         var burns = [];
+        var dates = [];
 
         $.getJSON(url, function (data) {
             $.each(data, function (i, item) {
@@ -129,8 +132,14 @@ $(document).ready(function () {
                 if (burn > 2) {
                     totalFail++;
                     bkgd = 'bkgd-danger';
+                    if (totalDays < 31) {
+                        monthFail++;
+                    }
                 } else {
                     totalSuccess++;
+                    if (totalDays < 31) {
+                        monthSuccess++;
+                    }
                 }
                 if (totalDays < 8) {
                     totalExtinguish = totalExtinguish + extinguish;
@@ -139,6 +148,7 @@ $(document).ready(function () {
                 totalDays++;
                 extinguishes.push(extinguish);
                 burns.push(burn);
+                dates.push(item.date.slice(-2));
 
                 var row = `<tr><td class='${bkgd}'">${item.date}</td><td>${drawExtinguisher(extinguish)}</td><td>${drawFire(burn)}</td></tr>`;
                 $("#tableBody").append(row);
@@ -152,14 +162,16 @@ $(document).ready(function () {
             $("#totalDays").append(`<strong">${totalDays}</strong>`);
             extinguishes = extinguishes.reverse();
             burns = burns.reverse();
+            dates = dates.reverse();
             if (totalDays > 30) {
                 extinguishes = extinguishes.slice(totalDays - 30);
                 burns = burns.slice(totalDays - 30);
+                dates = dates.slice(totalDays - 30);
             }
             var line_config = {
                 type: 'line',
                 data: {
-                    labels: new Array(30),
+                    labels: dates,
                     datasets: [
                         {
                             label: 'Extinguished',
@@ -191,7 +203,7 @@ $(document).ready(function () {
                 type: 'pie',
                 data: {
                     datasets: [{
-                        data: [totalSuccess, totalFail],
+                        data: [monthSuccess, monthFail],
                         backgroundColor: [
                             'rgb(75, 192, 192)',
                             'rgb(255, 99, 132)'
