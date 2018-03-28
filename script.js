@@ -168,35 +168,25 @@ $(document).ready(function () {
                 burns = burns.slice(totalDays - 30);
                 dates = dates.slice(totalDays - 30);
             }
-            var line_config = {
-                type: 'line',
+            var bar_config = {
+                type: 'bar',
                 data: {
                     labels: dates,
                     datasets: [
                         {
                             label: 'Extinguished',
-                            fill: false,
                             backgroundColor: 'rgb(75, 192, 192)',
                             data: extinguishes
                         },
                         {
                             label: 'Burned',
-                            fill: true,
                             backgroundColor: 'rgb(255, 99, 132)',
                             data: burns
                         }
                     ]
                 },
                 options: {
-                    responsive: true,
-                    tooltips: {
-                        mode: 'index',
-                        intersect: false,
-                    },
-                    hover: {
-                        mode: 'nearest',
-                        intersect: true
-                    }
+                    responsive: true
                 }
             }
             var pie_config = {
@@ -218,8 +208,8 @@ $(document).ready(function () {
                     responsive: true
                 }
             };    
-            var lineChart = document.getElementById('chart-line').getContext('2d');
-            window.myLine = new Chart(lineChart, line_config);
+            var barChart = document.getElementById('chart-bar').getContext('2d');
+            window.myBar = new Chart(barChart, bar_config);
             var pieChart = document.getElementById('chart-pie').getContext('2d');
             window.myPie = new Chart(pieChart, pie_config);
         });
