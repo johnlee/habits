@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width" />
@@ -13,6 +14,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.bundle.min.js"></script>
   <script src="./script.js"></script>
 </head>
+
 <body>
   <div class="container-fluid">
     <span class="text-muted small">Beta v1.0</span>
@@ -20,48 +22,99 @@
       <div class="card-block">
         <form id="form">
           <div class="form-group row">
-            <label for="formDate" class="col-sm-2 col-form-label">Date</label>
-            <div class="col-sm-10">
-              <input type="number" class="form-control" id="formDate" placeholder="YYYYMMDD">
+            <div class="col-sm-1">
+              <label for="editDate">
+                <i class="far fa-calendar-alt"></i>
+              </label>
+            </div>
+            <div class="col">
+              <div class="input-group">
+                <input type="number" class="form-control" id="editDate" placeholder="YYYYMMDD">
+                <span class="input-group-btn">
+                  <button id="btnMinusCalendar" class="btn btn-secondary" type="button">
+                    <i class="fas fa-arrow-alt-circle-down"></i>
+                  </button>
+                </span>
+                <span class="input-group-btn">
+                  <button id="btnPlusCalendar" class="btn btn-secondary" type="button">
+                    <i class="fas fa-arrow-alt-circle-up"></i>
+                </span>
+              </div>
             </div>
           </div>
           <div class="form-group row">
-            <label class="col-sm-2 col-form-label">Totals</label>
-            <div class="col-sm-10">
-              <h1>
-                <span id="totalSuccess" class="spanTotals">
-                  <i class="fas fa-check"></i>
-                </span>
-                <span id="totalFail" class="spanTotals">
-                  <i class="fas fa-times"></i>
-                </span>
-                <span id="totalExtinguished" class="spanTotals">
-                  <i class="fas fa-fire-extinguisher"></i>
-                </span>
-                <span id="totalBurned" class="spanTotals">
-                  <i class="fas fa-fire"></i>
-                </span>
-                <span id="totalDays" class="spanTotals">
-                  <i class="far fa-calendar-alt"></i>
-                </span>
-              </h1>
-            </div>
-          </div>
-          <hr>
-          <div class="form-group row">
-            <div class="col-sm-12 text-right">
-              <button type="submit" class="btn btn-outline-warning btn-lg" id="btnExtinguish">
+            <div class="col-sm-1">
+              <label for="editExtinguish">
                 <i class="fas fa-fire-extinguisher"></i>
-              </button>
-              <button type="submit" class="btn btn-outline-danger btn-lg" id="btnBurn">
-                <i class="fas fa-fire"></i>
-              </button>
-              <button type="submit" class="btn btn-outline-success btn-lg" id="btnBurn" data-toggle="modal" data-target="#modal">
-                <i class="fas fa-pencil-alt"></i>
-              </button>
+              </label>
             </div>
+            <div class="col">
+              <div class="input-group">
+                <input type="number" class="form-control" id="editExtinguish" placeholder="0">
+                <span class="input-group-btn">
+                  <button id="btnMinusExtinguish" class="btn btn-secondary" type="button">
+                    <i class="fas fa-arrow-alt-circle-down"></i>
+                  </button>
+                </span>
+                <span class="input-group-btn">
+                  <button id="btnPlusExtinguish" class="btn btn-secondary" type="button">
+                    <i class="fas fa-arrow-alt-circle-up"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="form-group row">
+            <div class="col-sm-1">
+              <label for="editFire">
+                <i class="fas fa-fire"></i>
+              </label>
+            </div>
+            <div class="col">
+              <div class="input-group">
+                <input type="number" class="form-control" id="editFire" placeholder="0">
+                <span class="input-group-btn">
+                  <button id="btnMinusFire" class="btn btn-secondary" type="button">
+                    <i class="fas fa-arrow-alt-circle-down"></i>
+                  </button>
+                </span>
+                <span class="input-group-btn">
+                  <button id="btnPlusFire" class="btn btn-secondary" type="button">
+                    <i class="fas fa-arrow-alt-circle-up"></i>
+                </span>
+              </div>
+            </div>
+          </div>
+          <hr/>
+          <div class="form-group row">
+            <button id="btnSave" type="button" class="btn btn-success">Save</button>
           </div>
         </form>
+      </div>
+    </div>
+    <hr>
+    <div class="card">
+      <div class="card-block">
+        <div class="row">
+          <div class="col-sm-12 text-center">
+            <h1>
+              <span id="totalSuccess" class="spanTotals">
+                <i class="fas fa-check"></i>
+              </span>
+              <span id="totalFail" class="spanTotals">
+                <i class="fas fa-times"></i>
+              </span>
+              <span id="totalExtinguished" class="spanTotals">
+                <i class="fas fa-fire-extinguisher"></i>
+              </span>
+              <span id="totalBurned" class="spanTotals">
+                <i class="fas fa-fire"></i>
+              </span>
+              <span id="totalDays" class="spanTotals">
+                <i class="far fa-calendar-alt"></i>
+              </span>
+            </h1>
+          </div>
+        </div>
       </div>
     </div>
     <hr>
@@ -71,6 +124,10 @@
     <hr>
     <div>
       <canvas id="chart-bar"></canvas>
+    </div>
+    <hr>
+    <div>
+      <canvas id="chart-line"></canvas>
     </div>
     <hr>
     <table class="table table-hover" id="results_table">
@@ -85,38 +142,6 @@
       </tbody>
     </table>
   </div>
-  <div class="modal fade" id="modal" role="dialog">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-body">
-          <form id="editform">
-            <div class="form-group row">
-              <label for="editDate" class="col-sm-2 col-form-label">Date</label>
-              <div class="col-sm-10">
-                <input type="number" class="form-control" id="editDate" placeholder="YYYYMMDD">
-              </div>
-            </div>
-            <div class="form-group row">
-              <label for="editExtinguish" class="col-sm-2 col-form-label"><i class="fas fa-fire-extinguisher"></i></label>
-              <div class="col-sm-10">
-                <input type="number" class="form-control" id="editExtinguish" placeholder="0">
-              </div>
-            </div>
-            <div class="form-group row">
-              <label for="editFire" class="col-sm-2 col-form-label"><i class="fas fa-fire"></i></label>
-              <div class="col-sm-10">
-                <input type="number" class="form-control" id="editFire" placeholder="0">
-              </div>
-            </div>
-          </form>
-        </div>
-        <div class="modal-footer">
-          <button id="btnSave" type="button" class="btn btn-success" data-dismiss="modal">Save</button>
-          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-        </div>
-      </div>
-    </div>
-  </div>
-
 </body>
+
 </html>
